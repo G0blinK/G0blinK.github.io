@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>XSS</title>
+</head>
+<body>
+<a href="/xss_2020-06/check_code-php.txt">check_code源码</a>
+  <p>Enter the secret code to access the secret page!</p>
+  <form name="form">
+    <input id="c" type="text"><input type="submit" value="Submit">
+  </form>
+  <div id="result"></div>
+  <script>
+    var callback = function(msg) {
+      result.innerHTML = msg;
+    }
+    document.addEventListener('DOMContentLoaded', function(event) {
+      if (getQuery('code')) {
+        var code = getQuery('code');
+        c.value = code;
+        checkCode(code);
+      }
+    });
+    form.addEventListener('submit', function(event) {
+      checkCode(c.value);
+      event.preventDefault();
+    });
+
+    function checkCode(code) {
+      var s = document.createElement('script');
+      s.src = `/xss_2020-06/check_code.php?callback=callback&code=${encodeURI(code)}`;
+      document.body.appendChild(s);
+    }
+
+    function getQuery(name) {
+      return new URL(location.href).searchParams.get(name);
+    }
+  </script>
+</body>
+</html>
